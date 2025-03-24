@@ -4,9 +4,12 @@ import { useEffect, useRef } from "react";
 
 interface DecreeFormData {
 	name: string;
-	year: number;
+	type: string;
+	emission_date: string;
 	description: string;
 	observations?: string;
+	authority?: string;
+	comments?: string;
 	url?: string;
 }
 
@@ -40,9 +43,12 @@ export default function DecreeModal({ isOpen, onClose, onSubmit }: DecreeModalPr
 		const formData = new FormData(e.currentTarget);
 		const decreeData: DecreeFormData = {
 			name: formData.get("name") as string,
-			year: Number(formData.get("year")),
+			type: formData.get("type") as string,
+			emission_date: formData.get("date") as string,
 			description: formData.get("description") as string,
 			observations: formData.get("observations") as string,
+			authority: formData.get("authority") as string,
+			comments: formData.get("comments") as string,
 			url: formData.get("url") as string,
 		};
 		onSubmit(decreeData);
@@ -163,7 +169,7 @@ export default function DecreeModal({ isOpen, onClose, onSubmit }: DecreeModalPr
 							URL
 						</label>
 						<input
-							type="url"
+							type="text"
 							id="url"
 							name="url"
 							className="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"

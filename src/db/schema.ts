@@ -1,16 +1,16 @@
 import { sql } from "drizzle-orm";
 import { text, integer, sqliteTable } from "drizzle-orm/sqlite-core";
 
-export const users = sqliteTable("users", {
+export const norms = sqliteTable("norms", {
 	id: integer("id", { mode: "number" }).notNull().primaryKey({ autoIncrement: true }),
 	name: text("name").notNull(),
 	type: text("type").notNull(),
 	emission_date: text("emission_date").notNull(),
-	description: text("description").notNull(),
-	observations: text("observations").notNull(),
-	authority: text("authority").notNull(),
-	comments: text("comments").notNull(),
-	url: text("url").notNull(),
+	description: text("description"),
+	observations: text("observations"),
+	authority: text("authority"),
+	comments: text("comments"),
+	url: text("url"),
 	created_at: text("created_at")
 		.notNull()
 		.default(sql`CURRENT_TIMESTAMP`),

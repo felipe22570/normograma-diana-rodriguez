@@ -2,13 +2,33 @@
 
 import { useState } from "react";
 import DecreeModal from "./DecreeModal";
+import { insertNorm, type NewNorm } from "@/lib/actions";
+import { useRouter } from "next/navigation";
+
+interface DecreeFormData {
+	name: string;
+	type: string;
+	emission_date: string;
+	description: string;
+	observations?: string;
+	authority?: string;
+	comments?: string;
+	url?: string;
+}
+
 export default function DecreeModalWrapper() {
 	const [isOpen, setIsOpen] = useState(false);
+	const router = useRouter();
 
-	const handleSubmit = async (data: unknown) => {
+	const handleSubmit = async (data: DecreeFormData) => {
 		console.log("Decree data:", data);
-		// await insertDecree(data);
+		const result = await insertNorm(data as NewNorm);
+		if (result.error) {
+			console.error("Error inserting norm:", result.error);
+			return;
+		}
 		setIsOpen(false);
+		router.refresh();
 	};
 
 	return (
