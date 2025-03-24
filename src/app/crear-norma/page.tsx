@@ -2,6 +2,8 @@ import DecreeModalWrapper from "@/components/DecreeModalWrapper";
 import { getNorms } from "@/lib/actions";
 import { Pencil, Trash2 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function CrearNorma() {
 	const { data: norms, error } = await getNorms();
 
