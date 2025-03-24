@@ -1,11 +1,52 @@
+"use client";
+
 import DecreeModalWrapper from "@/components/DecreeModalWrapper";
-import { getNorms } from "@/lib/actions";
+import EditNormModal from "@/components/EditNormModal";
+import { getNorms, deleteNorm } from "@/lib/actions";
 import { Pencil, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Norm } from "@/lib/actions";
+import { toast } from "sonner";
 
 export const dynamic = "force-dynamic";
 
-export default async function CrearNorma() {
-	const { data: norms, error } = await getNorms();
+export default function CrearNorma() {
+	const [norms, setNorms] = useState<Norm[]>([]);
+	const [error, setError] = useState<string | null>(null);
+	const [selectedNorm, setSelectedNorm] = useState<Norm | null>(null);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+	// Fetch norms on component mount
+	useEffect(() => {
+		const fetchNorms = async () => {
+			const { data, error } = await getNorms();
+			if (error) {
+				setError(error);
+			} else {
+				setNorms(data || []);
+			}
+		};
+		fetchNorms();
+	}, []);
+
+	const handleDelete = async (id: number) => {
+		if (!confirm("¿Está seguro de que desea eliminar esta norma?")) {
+			return;
+		}
+
+		const { error } = await deleteNorm(id);
+		if (error) {
+			toast.error(error);
+		} else {
+			toast.success("Norma eliminada correctamente");
+			setNorms(norms.filter((norm) => norm.id !== id));
+		}
+	};
+
+	const handleEdit = (norm: Norm) => {
+		setSelectedNorm(norm);
+		setIsEditModalOpen(true);
+	};
 
 	return (
 		<main className="container mx-auto px-4 py-8">
@@ -54,14 +95,14 @@ export default async function CrearNorma() {
 									{error}
 								</td>
 							</tr>
-						) : norms?.length === 0 ? (
+						) : norms.length === 0 ? (
 							<tr>
 								<td colSpan={9} className="px-6 py-4 text-center text-gray-500">
 									No hay normas registradas
 								</td>
 							</tr>
 						) : (
-							norms?.map((norm) => (
+							norms.map((norm) => (
 								<tr key={norm.id}>
 									<td className="px-6 py-4 whitespace-nowrap">{norm.type}</td>
 									<td className="px-6 py-4 whitespace-nowrap">{norm.name}</td>
@@ -85,10 +126,16 @@ export default async function CrearNorma() {
 										)}
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
-										<button className="text-blue-500 hover:text-blue-700 mr-2 inline-flex items-center gap-1">
+										<button
+											onClick={() => handleEdit(norm)}
+											className="text-blue-500 hover:text-blue-700 mr-2 inline-flex items-center gap-1"
+										>
 											<Pencil size={16} />
 										</button>
-										<button className="text-red-500 hover:text-red-700 inline-flex items-center gap-1">
+										<button
+											onClick={() => handleDelete(norm.id)}
+											className="text-red-500 hover:text-red-700 inline-flex items-center gap-1"
+										>
 											<Trash2 size={16} />
 										</button>
 									</td>
@@ -98,6 +145,17 @@ export default async function CrearNorma() {
 					</tbody>
 				</table>
 			</div>
+
+			{selectedNorm && (
+				<EditNormModal
+					norm={selectedNorm}
+					isOpen={isEditModalOpen}
+					onClose={() => {
+						setIsEditModalOpen(false);
+						setSelectedNorm(null);
+					}}
+				/>
+			)}
 		</main>
 	);
 }

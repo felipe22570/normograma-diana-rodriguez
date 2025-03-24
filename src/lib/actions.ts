@@ -39,3 +39,27 @@ export async function insertNorm(norm: NewNorm) {
 		return { data: null, error: "Failed to insert norm" };
 	}
 }
+
+export async function updateNorm(id: number, norm: Partial<NewNorm>) {
+	try {
+		const [updatedNorm] = await db
+			.update(norms)
+			.set({ ...norm, updated_at: new Date().toISOString() })
+			.where(eq(norms.id, id))
+			.returning();
+		return { data: updatedNorm, error: null };
+	} catch (error) {
+		console.error("Error updating norm:", error);
+		return { data: null, error: "Failed to update norm" };
+	}
+}
+
+export async function deleteNorm(id: number) {
+	try {
+		await db.delete(norms).where(eq(norms.id, id));
+		return { data: null, error: null };
+	} catch (error) {
+		console.error("Error deleting norm:", error);
+		return { data: null, error: "Failed to delete norm" };
+	}
+}

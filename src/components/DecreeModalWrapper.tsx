@@ -4,6 +4,8 @@ import { useState } from "react";
 import DecreeModal from "./DecreeModal";
 import { insertNorm, type NewNorm } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface DecreeFormData {
 	name: string;
@@ -21,24 +23,19 @@ export default function DecreeModalWrapper() {
 	const router = useRouter();
 
 	const handleSubmit = async (data: DecreeFormData) => {
-		console.log("Decree data:", data);
 		const result = await insertNorm(data as NewNorm);
 		if (result.error) {
-			console.error("Error inserting norm:", result.error);
+			toast.error(result.error);
 			return;
 		}
-		setIsOpen(false);
+		toast.success("Norma creada correctamente");
 		router.refresh();
+		setIsOpen(false);
 	};
 
 	return (
 		<>
-			<button
-				onClick={() => setIsOpen(true)}
-				className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
-			>
-				Crear Nueva Norma
-			</button>
+			<Button onClick={() => setIsOpen(true)}>Crear Nueva Norma</Button>
 			<DecreeModal isOpen={isOpen} onClose={() => setIsOpen(false)} onSubmit={handleSubmit} />
 		</>
 	);
