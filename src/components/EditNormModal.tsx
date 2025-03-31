@@ -15,9 +15,10 @@ interface EditNormModalProps {
 	norm: Norm;
 	isOpen: boolean;
 	onClose: () => void;
+	onSuccess?: () => void;
 }
 
-export default function EditNormModal({ norm, isOpen, onClose }: EditNormModalProps) {
+export default function EditNormModal({ norm, isOpen, onClose, onSuccess }: EditNormModalProps) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -44,6 +45,7 @@ export default function EditNormModal({ norm, isOpen, onClose }: EditNormModalPr
 		} else {
 			toast.success("Norma actualizada correctamente");
 			router.refresh();
+			onSuccess?.();
 			onClose();
 		}
 

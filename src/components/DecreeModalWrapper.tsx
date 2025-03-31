@@ -18,7 +18,11 @@ interface DecreeFormData {
 	url?: string;
 }
 
-export default function DecreeModalWrapper() {
+interface DecreeModalWrapperProps {
+	onSuccess?: () => void;
+}
+
+export default function DecreeModalWrapper({ onSuccess }: DecreeModalWrapperProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const router = useRouter();
 
@@ -30,6 +34,7 @@ export default function DecreeModalWrapper() {
 		}
 		toast.success("Norma creada correctamente");
 		router.refresh();
+		onSuccess?.();
 		setIsOpen(false);
 	};
 

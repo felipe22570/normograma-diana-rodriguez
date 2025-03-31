@@ -7,6 +7,11 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Norm } from "@/lib/actions";
 import { toast } from "sonner";
+import { DataTable } from "@/components/ui/data-table";
+import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export const dynamic = "force-dynamic";
 
@@ -15,17 +20,23 @@ export default function CrearNorma() {
 	const [error, setError] = useState<string | null>(null);
 	const [selectedNorm, setSelectedNorm] = useState<Norm | null>(null);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 
-	// Fetch norms on component mount
-	useEffect(() => {
-		const fetchNorms = async () => {
+	const fetchNorms = async () => {
+		try {
 			const { data, error } = await getNorms();
 			if (error) {
 				setError(error);
 			} else {
 				setNorms(data || []);
 			}
-		};
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	// Fetch norms on component mount
+	useEffect(() => {
 		fetchNorms();
 	}, []);
 
@@ -48,103 +59,158 @@ export default function CrearNorma() {
 		setIsEditModalOpen(true);
 	};
 
+	const columns: ColumnDef<Norm>[] = [
+		{
+			accessorKey: "type",
+			header: "Tipo",
+			cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue("type")}</div>,
+		},
+		{
+			accessorKey: "name",
+			header: "Nombre",
+			cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue("name")}</div>,
+		},
+		{
+			accessorKey: "emission_date",
+			header: "Fecha de emisión",
+			cell: ({ row }) => (
+				<div className="whitespace-nowrap">
+					{new Date(row.getValue("emission_date") + "T00:00:00").toLocaleDateString()}
+				</div>
+			),
+		},
+		{
+			accessorKey: "description",
+			header: "Descripción",
+			cell: ({ row }) => <div className="max-w-[400px]">{row.getValue("description")}</div>,
+		},
+		{
+			accessorKey: "authority",
+			header: "Autoridad",
+			cell: ({ row }) => <div className="w-32">{row.getValue("authority")}</div>,
+		},
+		{
+			accessorKey: "observations",
+			header: "Observaciones",
+			cell: ({ row }) => <div className="w-32">{row.getValue("observations")}</div>,
+		},
+		{
+			accessorKey: "comments",
+			header: "Comentarios",
+			cell: ({ row }) => <div>{row.getValue("comments")}</div>,
+		},
+		{
+			accessorKey: "url",
+			header: "URL",
+			cell: ({ row }) => {
+				const url = row.getValue("url") as string;
+				return url ? (
+					<a
+						href={url}
+						className="text-blue-500 hover:text-blue-700 underline"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						Ver documento
+					</a>
+				) : null;
+			},
+		},
+		{
+			id: "actions",
+			cell: ({ row }) => {
+				const norm = row.original;
+				return (
+					<div className="flex items-center gap-2">
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={() => handleEdit(norm)}
+							className="h-8 w-8 p-0"
+						>
+							<Pencil className="h-4 w-4" />
+						</Button>
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={() => handleDelete(norm.id)}
+							className="h-8 w-8 p-0"
+						>
+							<Trash2 className="h-4 w-4" />
+						</Button>
+					</div>
+				);
+			},
+		},
+	];
+
+	const TableSkeleton = () => (
+		<div className="rounded-md border">
+			<Table>
+				<TableHeader>
+					<TableRow>
+						<TableHead>Tipo</TableHead>
+						<TableHead>Nombre</TableHead>
+						<TableHead>Fecha de emisión</TableHead>
+						<TableHead>Descripción</TableHead>
+						<TableHead>Autoridad</TableHead>
+						<TableHead>Observaciones</TableHead>
+						<TableHead>Comentarios</TableHead>
+						<TableHead>URL</TableHead>
+						<TableHead>Acciones</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{[...Array(5)].map((_, index) => (
+						<TableRow key={index}>
+							<TableCell>
+								<Skeleton className="h-4 w-20" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-40" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-32" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-[400px]" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-32" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-32" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-40" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-24" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-8 w-16" />
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+		</div>
+	);
+
 	return (
 		<main className="container mx-auto px-4 py-8">
 			<div className="flex justify-between items-center mb-6">
 				<h1 className="text-2xl font-bold">Normas</h1>
-				<DecreeModalWrapper />
+				<DecreeModalWrapper onSuccess={fetchNorms} />
 			</div>
 
-			<div className="overflow-x-auto">
-				<table className="min-w-full bg-white border border-gray-300 text-sm">
-					<thead>
-						<tr className="bg-gray-100">
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Tipo
-							</th>
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Nombre
-							</th>
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Fecha de emisión
-							</th>
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Descripción
-							</th>
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Autoridad
-							</th>
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Observaciones
-							</th>
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Comentarios
-							</th>
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								URL
-							</th>
-							<th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Acciones
-							</th>
-						</tr>
-					</thead>
-					<tbody className="divide-y divide-gray-300">
-						{error ? (
-							<tr>
-								<td colSpan={9} className="px-6 py-4 text-center text-red-500">
-									{error}
-								</td>
-							</tr>
-						) : norms.length === 0 ? (
-							<tr>
-								<td colSpan={9} className="px-6 py-4 text-center text-gray-500">
-									No hay normas registradas
-								</td>
-							</tr>
-						) : (
-							norms.map((norm) => (
-								<tr key={norm.id}>
-									<td className="px-6 py-4 whitespace-nowrap">{norm.type}</td>
-									<td className="px-6 py-4 whitespace-nowrap">{norm.name}</td>
-									<td className="px-6 py-4 whitespace-nowrap">
-										{new Date(norm.emission_date).toLocaleDateString()}
-									</td>
-									<td className="px-6 py-4">{norm.description}</td>
-									<td className="px-6 py-4 whitespace-nowrap">{norm.authority}</td>
-									<td className="px-6 py-4">{norm.observations}</td>
-									<td className="px-6 py-4">{norm.comments}</td>
-									<td className="px-6 py-4">
-										{norm.url && (
-											<a
-												href={norm.url}
-												className="text-blue-500 hover:text-blue-700 underline"
-												target="_blank"
-												rel="noopener noreferrer"
-											>
-												Ver documento
-											</a>
-										)}
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap">
-										<button
-											onClick={() => handleEdit(norm)}
-											className="text-blue-500 hover:text-blue-700 mr-2 inline-flex items-center gap-1"
-										>
-											<Pencil size={16} />
-										</button>
-										<button
-											onClick={() => handleDelete(norm.id)}
-											className="text-red-500 hover:text-red-700 inline-flex items-center gap-1"
-										>
-											<Trash2 size={16} />
-										</button>
-									</td>
-								</tr>
-							))
-						)}
-					</tbody>
-				</table>
-			</div>
+			{error ? (
+				<div className="text-center text-red-500">{error}</div>
+			) : isLoading ? (
+				<TableSkeleton />
+			) : (
+				<DataTable columns={columns} data={norms} />
+			)}
 
 			{selectedNorm && (
 				<EditNormModal
@@ -154,6 +220,7 @@ export default function CrearNorma() {
 						setIsEditModalOpen(false);
 						setSelectedNorm(null);
 					}}
+					onSuccess={fetchNorms}
 				/>
 			)}
 		</main>
