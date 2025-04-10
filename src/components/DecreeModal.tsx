@@ -66,7 +66,7 @@ export default function DecreeModal({ isOpen, onClose, onSubmit }: DecreeModalPr
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="observations">Observaciones</Label>
-						<Textarea id="observations" name="observations" rows={5} />
+						<Textarea id="observations" name="observations" rows={5}  />
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="authority">Autoridad que emite la norma</Label>
