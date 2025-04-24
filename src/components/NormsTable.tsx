@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { FilterParams, getNorms } from "@/app/actions";
 import { useEffect, useState } from "react";
+import { Info } from "lucide-react";
 
 interface NormsTableProps {
 	filters: FilterParams;
@@ -49,13 +50,13 @@ export default function NormsTable({ filters }: NormsTableProps) {
 		{
 			accessorKey: "name",
 			header: "Nombre",
-			cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue("name")}</div>,
+			cell: ({ row }) => <div className="w-24">{row.getValue("name")}</div>,
 		},
 		{
 			accessorKey: "emission_date",
 			header: "Fecha de emisión",
 			cell: ({ row }) => (
-				<div className="whitespace-nowrap">
+				<div className="w-5">
 					{new Date(row.getValue("emission_date") + "T00:00:00").toLocaleDateString()}
 				</div>
 			),
@@ -63,12 +64,28 @@ export default function NormsTable({ filters }: NormsTableProps) {
 		{
 			accessorKey: "description",
 			header: "Descripción",
-			cell: ({ row }) => <div className="max-w-[400px]">{row.getValue("description")}</div>,
+			cell: ({ row }) => <div className="max-w-[320px]">{row.getValue("description")}</div>,
 		},
 		{
 			accessorKey: "authority",
 			header: "Autoridad",
 			cell: ({ row }) => <div className="w-32">{row.getValue("authority")}</div>,
+		},
+		{
+			accessorKey: "observations",
+			header: "Observaciones",
+			cell: ({ row }) => <div className="max-w-[200px]">{row.getValue("observations")}</div>,
+		},
+		{
+			accessorKey: "comments",
+			header: "Comentarios",
+			cell: ({ row }) =>
+				row.getValue("comments") && (
+					<span className="max-w-[200px] inline-block rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+						<Info className="w-4 h-4 mt-[-3px] inline-block mr-1" />
+						{row.getValue("comments")}
+					</span>
+				),
 		},
 		{
 			accessorKey: "url",
@@ -100,6 +117,8 @@ export default function NormsTable({ filters }: NormsTableProps) {
 						<TableHead>Descripción</TableHead>
 						<TableHead>Autoridad</TableHead>
 						<TableHead>URL</TableHead>
+						<TableHead>Observaciones</TableHead>
+						<TableHead>Comentarios</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -122,6 +141,12 @@ export default function NormsTable({ filters }: NormsTableProps) {
 							</TableCell>
 							<TableCell>
 								<Skeleton className="h-4 w-24" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-32" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-200" />
 							</TableCell>
 						</TableRow>
 					))}

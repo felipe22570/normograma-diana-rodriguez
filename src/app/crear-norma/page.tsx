@@ -3,7 +3,7 @@
 import DecreeModalWrapper from "@/components/DecreeModalWrapper";
 import EditNormModal from "@/components/EditNormModal";
 import { getNorms, deleteNorm } from "@/lib/actions";
-import { Pencil, Trash2 } from "lucide-react";
+import { Info, Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Norm } from "@/lib/actions";
 import { toast } from "sonner";
@@ -68,13 +68,13 @@ export default function CrearNorma() {
 		{
 			accessorKey: "name",
 			header: "Nombre",
-			cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue("name")}</div>,
+			cell: ({ row }) => <div className="w-24">{row.getValue("name")}</div>,
 		},
 		{
 			accessorKey: "emission_date",
 			header: "Fecha de emisión",
 			cell: ({ row }) => (
-				<div className="whitespace-nowrap">
+				<div className="w-5">
 					{new Date(row.getValue("emission_date") + "T00:00:00").toLocaleDateString()}
 				</div>
 			),
@@ -82,7 +82,7 @@ export default function CrearNorma() {
 		{
 			accessorKey: "description",
 			header: "Descripción",
-			cell: ({ row }) => <div className="max-w-[400px]">{row.getValue("description")}</div>,
+			cell: ({ row }) => <div className="max-w-[320px]">{row.getValue("description")}</div>,
 		},
 		{
 			accessorKey: "authority",
@@ -92,12 +92,18 @@ export default function CrearNorma() {
 		{
 			accessorKey: "observations",
 			header: "Observaciones",
-			cell: ({ row }) => <div className="w-32">{row.getValue("observations")}</div>,
+			cell: ({ row }) => <div className="max-w-[200px]">{row.getValue("observations")}</div>,
 		},
 		{
 			accessorKey: "comments",
 			header: "Comentarios",
-			cell: ({ row }) => <div>{row.getValue("comments")}</div>,
+			cell: ({ row }) =>
+				row.getValue("comments") && (
+					<span className="max-w-[200px] inline-block rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+						<Info className="w-4 h-4 mt-[-3px] inline-block mr-1" />
+						{row.getValue("comments")}
+					</span>
+				),
 		},
 		{
 			accessorKey: "url",
