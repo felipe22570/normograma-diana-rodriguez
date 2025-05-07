@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FilterParams, getNorms } from "@/app/actions";
 import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface NormsTableProps {
 	filters: FilterParams;
@@ -45,7 +46,7 @@ export default function NormsTable({ filters }: NormsTableProps) {
 		{
 			accessorKey: "type",
 			header: "Tipo",
-			cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue("type")}</div>,
+			cell: ({ row }) => <div className="w-20">{row.getValue("type")}</div>,
 		},
 		{
 			accessorKey: "name",
@@ -81,10 +82,14 @@ export default function NormsTable({ filters }: NormsTableProps) {
 			header: "Comentarios",
 			cell: ({ row }) =>
 				row.getValue("comments") && (
-					<span className="max-w-[200px] inline-block rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
-						<Info className="w-4 h-4 mt-[-3px] inline-block mr-1" />
-						{row.getValue("comments")}
-					</span>
+					<Popover>
+						<PopoverTrigger asChild>
+							<Info className="w-6 h-6 mt-[-3px] flex items-center justify-center text-red-600 hover:text-red-700 cursor-pointer" />
+						</PopoverTrigger>
+						<PopoverContent className="max-w-xs break-words whitespace-pre-line bg-red-50 text-red-700 shadow-lg border border-gray-200 ">
+							<p className="text-sm text-center">{row.getValue("comments")}</p>
+						</PopoverContent>
+					</Popover>
 				),
 		},
 		{
