@@ -18,3 +18,16 @@ export const norms = sqliteTable("norms", {
 		.notNull()
 		.default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const glossary = sqliteTable("glossary", {
+	id: integer("id", { mode: "number" }).notNull().primaryKey({ autoIncrement: true }),
+	name: text("name").notNull(),
+	definition: text("definition").notNull(),
+	source: text("source"),
+	created_at: text("created_at")
+		.notNull()
+		.default(sql`CURRENT_TIMESTAMP`),
+	updated_at: text("updated_at")
+		.notNull()
+		.default(sql`CURRENT_TIMESTAMP`),
+});
