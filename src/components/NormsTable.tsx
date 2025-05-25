@@ -46,7 +46,39 @@ export default function NormsTable({ filters }: NormsTableProps) {
 		{
 			accessorKey: "type",
 			header: "Tipo",
-			cell: ({ row }) => <div className="w-20">{row.getValue("type")}</div>,
+			cell: ({ row }) => {
+				const type = (row.getValue("type") as string).trim().toUpperCase();
+				let colorClass = "";
+				let backgroundClass = "";
+
+				switch (type) {
+					case "DECRETO":
+						colorClass = "text-purple-700";
+						backgroundClass = "bg-purple-100";
+						break;
+					case "LEY":
+						colorClass = "text-green-700";
+						backgroundClass = "bg-green-100";
+						break;
+					case "RESOLUCIÓN":
+						colorClass = "text-sky-600";
+						backgroundClass = "bg-sky-100";
+						break;
+					default:
+						colorClass = "text-gray-900";
+						backgroundClass = "bg-gray-100";
+				}
+
+				return (
+					<div className="w-20">
+						<span
+							className={`px-3 py-2 rounded-full text-xs font-medium ${colorClass} ${backgroundClass}`}
+						>
+							{type}
+						</span>
+					</div>
+				);
+			},
 		},
 		{
 			accessorKey: "name",

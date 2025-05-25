@@ -62,7 +62,7 @@ export default function CrearGlosario() {
 		{
 			accessorKey: "name",
 			header: "Término",
-			cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue("name")}</div>,
+			cell: ({ row }) => <div className="w-72 font-medium">{row.getValue("name")}</div>,
 		},
 		{
 			accessorKey: "definition",

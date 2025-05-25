@@ -68,9 +68,8 @@ export default function FilterForm({ onFilterChange }: FilterFormProps) {
 
 	// Handle debounced search changes
 	useEffect(() => {
-		if (debouncedSearch !== localFilters.search) {
-			onFilterChange({ ...localFilters, search: debouncedSearch });
-		}
+		const currentFilters = { ...localFilters, search: debouncedSearch };
+		onFilterChange(currentFilters);
 	}, [debouncedSearch]);
 
 	if (loading) {
