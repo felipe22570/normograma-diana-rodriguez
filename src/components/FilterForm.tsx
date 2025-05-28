@@ -5,6 +5,8 @@ import { FilterParams, getFilterOptions } from "@/app/actions";
 
 interface FilterFormProps {
 	onFilterChange: (filters: FilterParams) => void;
+	hideTypeFilter?: boolean;
+	initialFilters?: Partial<FilterParams>;
 }
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -23,11 +25,16 @@ function useDebounce<T>(value: T, delay: number): T {
 	return debouncedValue;
 }
 
-export default function FilterForm({ onFilterChange }: FilterFormProps) {
+export default function FilterForm({
+	onFilterChange,
+	hideTypeFilter = false,
+	initialFilters,
+}: FilterFormProps) {
 	const [localFilters, setLocalFilters] = useState<FilterParams>({
 		year: "Todos los años",
 		type: "Todos los tipos",
 		search: "",
+		...initialFilters,
 	});
 
 	const [options, setOptions] = useState({
@@ -76,7 +83,7 @@ export default function FilterForm({ onFilterChange }: FilterFormProps) {
 		return (
 			<div className="space-y-4 bg-white rounded-lg shadow p-4 animate-pulse">
 				<div className="h-10 bg-gray-200 rounded"></div>
-				<div className="h-10 bg-gray-200 rounded"></div>
+				{!hideTypeFilter && <div className="h-10 bg-gray-200 rounded"></div>}
 				<div className="h-10 bg-gray-200 rounded"></div>
 			</div>
 		);
@@ -102,23 +109,25 @@ export default function FilterForm({ onFilterChange }: FilterFormProps) {
 				</select>
 			</div>
 
-			<div>
-				<label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-					Filtrar por tipo:
-				</label>
-				<select
-					id="type"
-					value={localFilters.type}
-					onChange={(e) => handleFilterChange({ type: e.target.value })}
-					className="w-full p-2 border border-gray-300 rounded-md bg-gray-50"
-				>
-					{options.types.map((type) => (
-						<option key={type} value={type}>
-							{type}
-						</option>
-					))}
-				</select>
-			</div>
+			{!hideTypeFilter && (
+				<div>
+					<label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+						Filtrar por tipo:
+					</label>
+					<select
+						id="type"
+						value={localFilters.type}
+						onChange={(e) => handleFilterChange({ type: e.target.value })}
+						className="w-full p-2 border border-gray-300 rounded-md bg-gray-50"
+					>
+						{options.types.map((type) => (
+							<option key={type} value={type}>
+								{type}
+							</option>
+						))}
+					</select>
+				</div>
+			)}
 
 			<div>
 				<label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">

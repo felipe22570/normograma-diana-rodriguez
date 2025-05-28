@@ -9,6 +9,7 @@ import { FilterParams, getNorms } from "@/app/actions";
 import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import Image from "next/image";
 
 interface NormsTableProps {
 	filters: FilterParams;
@@ -97,7 +98,7 @@ export default function NormsTable({ filters }: NormsTableProps) {
 		{
 			accessorKey: "description",
 			header: "Descripción",
-			cell: ({ row }) => <div className="max-w-[320px]">{row.getValue("description")}</div>,
+			cell: ({ row }) => <div className="max-w-[500px]">{row.getValue("description")}</div>,
 		},
 		{
 			accessorKey: "authority",
@@ -107,21 +108,41 @@ export default function NormsTable({ filters }: NormsTableProps) {
 		{
 			accessorKey: "observations",
 			header: "Observaciones",
-			cell: ({ row }) => <div className="max-w-[200px]">{row.getValue("observations")}</div>,
+			cell: ({ row }) =>
+				row.getValue("observations") && (
+					<div className="w-20 flex items-center justify-center">
+						<Popover>
+							<PopoverTrigger asChild>
+								<Image
+									src="/observations.jpg"
+									alt="Info"
+									width={30}
+									height={30}
+									className="cursor-pointer"
+								/>
+							</PopoverTrigger>
+							<PopoverContent className="max-w-xs break-words whitespace-pre-line bg-gray-100 shadow-lg border border-gray-200 ">
+								<p className="text-sm text-center">{row.getValue("observations")}</p>
+							</PopoverContent>
+						</Popover>
+					</div>
+				),
 		},
 		{
 			accessorKey: "comments",
 			header: "Comentarios",
 			cell: ({ row }) =>
 				row.getValue("comments") && (
-					<Popover>
-						<PopoverTrigger asChild>
-							<Info className="w-6 h-6 mt-[-3px] flex items-center justify-center text-red-600 hover:text-red-700 cursor-pointer" />
-						</PopoverTrigger>
-						<PopoverContent className="max-w-xs break-words whitespace-pre-line bg-red-50 text-red-700 shadow-lg border border-gray-200 ">
-							<p className="text-sm text-center">{row.getValue("comments")}</p>
-						</PopoverContent>
-					</Popover>
+					<div className="w-20 flex items-center justify-center">
+						<Popover>
+							<PopoverTrigger asChild>
+								<Info className="w-6 h-6 mt-[-3px] flex items-center justify-center text-red-600 hover:text-red-700 cursor-pointer" />
+							</PopoverTrigger>
+							<PopoverContent className="max-w-xs break-words whitespace-pre-line bg-red-50 text-red-700 shadow-lg border border-gray-200 ">
+								<p className="text-sm text-center">{row.getValue("comments")}</p>
+							</PopoverContent>
+						</Popover>
+					</div>
 				),
 		},
 		{
