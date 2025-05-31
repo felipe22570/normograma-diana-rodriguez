@@ -51,7 +51,15 @@ export default function GlossaryTable({ searchTerm = "" }: GlossaryTableProps) {
 				(item.source && item.source.toLowerCase().includes(searchTermLower))
 			);
 		});
-		setFilteredGlossary(filtered);
+
+		// Sort alphabetically by name - create new array to avoid mutation issues
+		const sorted = [...filtered].sort((a, b) => {
+			const nameA = a.name.toLowerCase().trim();
+			const nameB = b.name.toLowerCase().trim();
+			return nameA.localeCompare(nameB);
+		});
+
+		setFilteredGlossary(sorted);
 	}, [glossary, searchTerm]);
 
 	const columns: ColumnDef<Glossary>[] = [

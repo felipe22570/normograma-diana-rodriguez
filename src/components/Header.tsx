@@ -23,6 +23,7 @@ const Header = () => {
 					>
 						NORMOGRAMA
 					</h1>
+					<h3 className="text-xl mt-2">DROGUERIA GIRAFARMA</h3>
 				</div>
 			</div>
 
