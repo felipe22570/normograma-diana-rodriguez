@@ -7,10 +7,12 @@ import GlossaryFilterForm from "@/components/GlossaryFilterForm";
 // import NormsList from "@/components/NormsList";
 import NormsTable from "@/components/NormsTable";
 import GlossaryTable from "@/components/GlossaryTable";
+import AccessKeyForm from "@/components/AccessKeyForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { FilterParams } from "./actions";
 
 export default function Home() {
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [filters, setFilters] = useState<FilterParams>({
 		year: "Todos los años",
 		type: "Todos los tipos",
@@ -57,6 +59,16 @@ export default function Home() {
 		setGlossarySearch(search);
 	};
 
+	const handleAccessGranted = () => {
+		setIsAuthenticated(true);
+	};
+
+	// Show access key form if not authenticated
+	if (!isAuthenticated) {
+		return <AccessKeyForm onAccessGranted={handleAccessGranted} />;
+	}
+
+	// Show main content if authenticated
 	return (
 		<main>
 			<Header />

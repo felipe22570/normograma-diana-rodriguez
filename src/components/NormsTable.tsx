@@ -98,12 +98,30 @@ export default function NormsTable({ filters }: NormsTableProps) {
 		{
 			accessorKey: "description",
 			header: "Descripción",
-			cell: ({ row }) => <div className="max-w-[500px]">{row.getValue("description")}</div>,
+			cell: ({ row }) =>
+				row.getValue("description") && (
+					<div className="w-40 flex items-center justify-center">
+						<Popover>
+							<PopoverTrigger asChild>
+								<Image
+									src="/description.jpg"
+									alt="Info"
+									width={100}
+									height={100}
+									className="cursor-pointer"
+								/>
+							</PopoverTrigger>
+							<PopoverContent className="w-96 break-words whitespace-pre-line bg-gray-100 shadow-lg border border-gray-200 ">
+								<p className="text-sm text-center">{row.getValue("description")}</p>
+							</PopoverContent>
+						</Popover>
+					</div>
+				),
 		},
 		{
 			accessorKey: "authority",
 			header: "Autoridad",
-			cell: ({ row }) => <div className="w-32">{row.getValue("authority")}</div>,
+			cell: ({ row }) => <div className="w-42">{row.getValue("authority")}</div>,
 		},
 		{
 			accessorKey: "observations",

@@ -2,6 +2,7 @@
 
 import DecreeModalWrapper from "@/components/DecreeModalWrapper";
 import EditNormModal from "@/components/EditNormModal";
+import AccessKeyForm from "@/components/AccessKeyForm";
 import { getNorms, deleteNorm } from "@/lib/actions";
 import { Info, Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -17,6 +18,7 @@ import Image from "next/image";
 export const dynamic = "force-dynamic";
 
 export default function CrearNorma() {
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [norms, setNorms] = useState<Norm[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [selectedNorm, setSelectedNorm] = useState<Norm | null>(null);
@@ -41,6 +43,10 @@ export default function CrearNorma() {
 		fetchNorms();
 	}, []);
 
+	const handleAccessGranted = () => {
+		setIsAuthenticated(true);
+	};
+
 	const handleDelete = async (id: number) => {
 		if (!confirm("¿Está seguro de que desea eliminar esta norma?")) {
 			return;
@@ -59,6 +65,11 @@ export default function CrearNorma() {
 		setSelectedNorm(norm);
 		setIsEditModalOpen(true);
 	};
+
+	// Show access key form if not authenticated
+	if (!isAuthenticated) {
+		return <AccessKeyForm onAccessGranted={handleAccessGranted} />;
+	}
 
 	const columns: ColumnDef<Norm>[] = [
 		{
@@ -115,12 +126,30 @@ export default function CrearNorma() {
 		{
 			accessorKey: "description",
 			header: "Descripción",
-			cell: ({ row }) => <div className="max-w-[500px]">{row.getValue("description")}</div>,
+			cell: ({ row }) =>
+				row.getValue("description") && (
+					<div className="w-40 flex items-center justify-center">
+						<Popover>
+							<PopoverTrigger asChild>
+								<Image
+									src="/description.jpg"
+									alt="Info"
+									width={120}
+									height={120}
+									className="cursor-pointer"
+								/>
+							</PopoverTrigger>
+							<PopoverContent className="w-96 break-words whitespace-pre-line bg-gray-100 shadow-lg border border-gray-200 ">
+								<p className="text-sm text-center">{row.getValue("description")}</p>
+							</PopoverContent>
+						</Popover>
+					</div>
+				),
 		},
 		{
 			accessorKey: "authority",
 			header: "Autoridad",
-			cell: ({ row }) => <div className="w-32">{row.getValue("authority")}</div>,
+			cell: ({ row }) => <div className="w-42">{row.getValue("authority")}</div>,
 		},
 		{
 			accessorKey: "observations",

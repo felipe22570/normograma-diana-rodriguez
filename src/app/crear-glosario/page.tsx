@@ -2,6 +2,7 @@
 
 import GlossaryModalWrapper from "@/components/GlossaryModalWrapper";
 import GlossaryModal from "@/components/GlossaryModal";
+import AccessKeyForm from "@/components/AccessKeyForm";
 import { getGlossary, deleteGlossary, updateGlossary } from "@/lib/actions";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -16,6 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export const dynamic = "force-dynamic";
 
 export default function CrearGlosario() {
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [glossary, setGlossary] = useState<Glossary[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [selectedItem, setSelectedItem] = useState<Glossary | null>(null);
@@ -39,6 +41,10 @@ export default function CrearGlosario() {
 		fetchGlossary();
 	}, []);
 
+	const handleAccessGranted = () => {
+		setIsAuthenticated(true);
+	};
+
 	const handleDelete = async (id: number) => {
 		if (!confirm("¿Está seguro de que desea eliminar este término?")) {
 			return;
@@ -57,6 +63,11 @@ export default function CrearGlosario() {
 		setSelectedItem(item);
 		setIsEditModalOpen(true);
 	};
+
+	// Show access key form if not authenticated
+	if (!isAuthenticated) {
+		return <AccessKeyForm onAccessGranted={handleAccessGranted} />;
+	}
 
 	const columns: ColumnDef<Glossary>[] = [
 		{
